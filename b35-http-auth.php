@@ -1,4 +1,12 @@
 <?php
+/*
+Plugin Name: B35 Http Auth
+Plugin URI: https://bramesposito.com
+Description: Disable unauthenticated access to your site
+Author: Bram Esposito
+Version: 1.0
+Author URI: https://bramesposito.com
+*/
 /**
  * Description
  * ===========
@@ -14,9 +22,8 @@
  * ============
  * Http Auth does not work when PHP is installed as a CGI wrapper. See
  * [the PHP http.auth documentation](http://uk.php.net/manual/en/features.http-auth.php)
- * for more information.
- * This version contains a workaround.
- * 
+ * for more information and potential workarounds.
+ * Add SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0 to your .htaccess
  */
 
 add_action( 'wp_loaded', function() {
@@ -24,12 +31,11 @@ add_action( 'wp_loaded', function() {
   // FCGI wrapper fix
   if(in_array(php_sapi_name(), ['cgi-fcgi', 'fpm-fcgi'])) {
 
-    // Ensure insert_with_markers() and get_home_path() are declared
+    // Ensure insert_with_markers() is declared
     require_once ABSPATH . 'wp-admin/includes/misc.php';
-    require_once ABSPATH . 'wp-admin/includes/file.php';
 
     // Get path to main .htaccess for WordPress
-    $htaccess = get_home_path().".htaccess";
+    $htaccess = trailingslashit($_SERVER['DOCUMENT_ROOT']).".htaccess";
     $lines = ["SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0"];
     insert_with_markers($htaccess, "b35-http-auth", $lines);
   }
@@ -61,4 +67,13 @@ function b35_deny_access() {
   header('HTTP/1.0 401 Unauthorized');
   echo 'You need to be logged in to see this page.';
   exit;
+}
+
+if (!function_exists('b35_isProduction')) {
+  function b35_isProduction() {
+    if (defined('WP_ENV')) {
+      return (WP_ENV == "production");
+    }
+    return $_SERVER['SERVER_ADDR'] != "127.0.0.1";
+  }
 }
