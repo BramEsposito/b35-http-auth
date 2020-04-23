@@ -14,10 +14,25 @@
  * ============
  * Http Auth does not work when PHP is installed as a CGI wrapper. See
  * [the PHP http.auth documentation](http://uk.php.net/manual/en/features.http-auth.php)
- * for more information and potential workarounds.
+ * for more information.
+ * This version contains a workaround.
+ * 
  */
 
-add_action( 'init', function() {
+add_action( 'wp_loaded', function() {
+
+  // FCGI wrapper fix
+  if(in_array(php_sapi_name(), ['cgi-fcgi', 'fpm-fcgi'])) {
+
+    // Ensure insert_with_markers() and get_home_path() are declared
+    require_once ABSPATH . 'wp-admin/includes/misc.php';
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+
+    // Get path to main .htaccess for WordPress
+    $htaccess = get_home_path().".htaccess";
+    $lines = ["SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0"];
+    insert_with_markers($htaccess, "b35-http-auth", $lines);
+  }
 
   // Detect if we are on a test environment.
   // Implement your own method.
@@ -31,9 +46,11 @@ add_action( 'init', function() {
   $password = getenv('STAGING_PWD');
 
   if (!isset($_SERVER['PHP_AUTH_USER'])) {
+    header("X-auth:no credentials");
     b35_deny_access();
   } else {
     if ($_SERVER['PHP_AUTH_USER'] != $username || $_SERVER['PHP_AUTH_PW'] != $password) {
+      header("X-auth:credentials incorrect");
       b35_deny_access();
     }
   }
