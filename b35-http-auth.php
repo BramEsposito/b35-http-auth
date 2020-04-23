@@ -1,13 +1,13 @@
 <?php
-/*
-Plugin Name: B35 Http Auth
-Plugin URI: https://bramesposito.com
-Description: Disable unauthenticated access to your site
-Author: Bram Esposito
-Version: 1.0
-Author URI: https://bramesposito.com
-*/
+
 /**
+ * Plugin Name: B35 Http Auth
+ * Plugin URI: https://gist.github.com/BramEsposito/bbd5a6a03b2ce5dcda33f4a4827187b0
+ * Description: Disable unauthenticated access to your site
+ * Author: Bram Esposito
+ * Version: 1.0
+ * Author URI: https://bramesposito.com
+ *
  * Description
  * ===========
  * Disable unauthenticated access to your site. This "Must-Use"-plugin presents
@@ -28,14 +28,6 @@ Author URI: https://bramesposito.com
 
 add_action( 'wp_loaded', function() {
 
-  // always allow cli clients
-  if (php_sapi_name() == "cli") return;
-
-  // Detect if we are on a test environment.
-  // Implement your own method.
-  // Or just remove the next line and do not deploy this file on production.
-  if (b35_isProduction()) return;
-
   // FCGI wrapper fix
   if(in_array(php_sapi_name(), ['cgi-fcgi', 'fpm-fcgi'])) {
 
@@ -48,7 +40,10 @@ add_action( 'wp_loaded', function() {
     insert_with_markers($htaccess, "b35-http-auth", $lines);
   }
 
-
+  // Detect if we are on a test environment.
+  // Implement your own method.
+  // Or just remove the next line and do not deploy this file on production.
+  if (b35_isProduction()) return;
 
   // I've put my credentials in an .env file and am retrieving them here.
   // Wordpress does not provide .env support so this would not work out of the box.
@@ -74,11 +69,9 @@ function b35_deny_access() {
   exit;
 }
 
-if (!function_exists('b35_isProduction')) {
-  function b35_isProduction() {
-    if (defined('WP_ENV')) {
-      return (WP_ENV == "production");
-    }
-    return $_SERVER['SERVER_ADDR'] != "127.0.0.1";
+function b35_isProduction() {
+  if (defined('WP_ENV')) {
+    return (WP_ENV == "production");
   }
+  return $_SERVER['SERVER_ADDR'] != "127.0.0.1";
 }
