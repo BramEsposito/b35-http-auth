@@ -28,6 +28,14 @@ Author URI: https://bramesposito.com
 
 add_action( 'wp_loaded', function() {
 
+  // always allow cli clients
+  if (php_sapi_name() == "cli") return;
+
+  // Detect if we are on a test environment.
+  // Implement your own method.
+  // Or just remove the next line and do not deploy this file on production.
+  if (b35_isProduction()) return;
+
   // FCGI wrapper fix
   if(in_array(php_sapi_name(), ['cgi-fcgi', 'fpm-fcgi'])) {
 
@@ -40,10 +48,7 @@ add_action( 'wp_loaded', function() {
     insert_with_markers($htaccess, "b35-http-auth", $lines);
   }
 
-  // Detect if we are on a test environment.
-  // Implement your own method.
-  // Or just remove the next line and do not deploy this file on production.
-  if (b35_isProduction()) return;
+
 
   // I've put my credentials in an .env file and am retrieving them here.
   // Wordpress does not provide .env support so this would not work out of the box.
