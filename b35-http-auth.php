@@ -40,7 +40,7 @@ add_action( 'init', function() {
 } );
 
 function b35_deny_access() {
-  header('WWW-Authenticate: Basic realm="Staging'.$_SERVER['PHP_AUTH_USER'].'"');
+  header('WWW-Authenticate: Basic realm="Staging"');
   header('HTTP/1.0 401 Unauthorized');
   echo 'You need to be logged in to see this page.';
   exit;
