@@ -51,8 +51,8 @@ add_action( 'wp_loaded', function() {
   // I've put my credentials in an .env file and am retrieving them here.
   // Wordpress does not provide .env support so this would not work out of the box.
   // You can replace them with hardcoded credentials.
-  $username = getenv('STAGING_USER');
-  $password = getenv('STAGING_PWD');
+  $username = $_ENV['STAGING_USER'];
+  $password = $_ENV['STAGING_PWD'];
 
   if (!isset($_SERVER['PHP_AUTH_USER'])) {
     header("X-auth:no credentials");
