@@ -35,6 +35,9 @@ add_action( 'wp_loaded', function() {
   // Implement your own method.
   // Or just remove the next line and do not deploy this file on production.
   if (b35_isProduction()) return;
+  
+  // Allow access from the server itself for e.g. wp-cron and rest calls
+  if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") return;
 
   // FCGI wrapper fix
   if(in_array(php_sapi_name(), ['cgi-fcgi', 'fpm-fcgi'])) {
