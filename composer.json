@@ -1,0 +1,21 @@
+{
+  "name": "bramesposito/b35-http-auth",
+  "description": "Disable unauthenticated access to your site via HTTP basic auth (WordPress must-use plugin).",
+  "type": "wordpress-muplugin",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/BramEsposito/b35-http-auth",
+  "authors": [
+    {
+      "name": "Bram Esposito",
+      "homepage": "https://bramesposito.com"
+    }
+  ],
+  "require": {
+    "composer/installers": "^1.0 || ^2.0"
+  },
+  "autoload": {
+    "classmap": [
+      "."
+    ]
+  }
+}
